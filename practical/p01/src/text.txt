@@ -1,2 +1,3 @@
 Hello world, how are you doing today?
 Made some changes that wont be caught by the commit
+Added new stuff to branch testing in this file
