@@ -4,7 +4,6 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.screen.Screen;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ public class Arena {
         hero = new Hero(10,10);
         this.walls = createWalls();
         this.coins = createCoins();
+        this.monsters = createEnemies();
     }
 
     public int getWidth() {
@@ -56,7 +56,7 @@ public class Arena {
         return coinIdx(position) != -1;
     }
 
-    private boolean canHeroMove(Position position){
+    private boolean canMoveElement(Position position){
 
         return position.getX() >= 0 &&
                 position.getX() < width &&
@@ -66,7 +66,7 @@ public class Arena {
     }
 
     private void moveHero(Position position){
-        if(canHeroMove(position))
+        if(canMoveElement(position))
             hero.setPosition(position);
     }
 
@@ -86,6 +86,24 @@ public class Arena {
         }
 
         return coins;
+    }
+
+    private List<Monster> createEnemies() {
+        List<Monster> enemies = new ArrayList<>();
+
+        Random random = new Random();
+
+        int numEnemies = random.nextInt(15)+5;
+
+        for (int i = 0; i < numEnemies;) {
+            Position pos = new Position(random.nextInt(width-1), random.nextInt(height-1));
+            if(!isWall(pos) && !pos.equals(hero.position)) {
+                enemies.add(new Monster(pos.getX(), pos.getY()));
+                i++;
+            }
+        }
+
+        return enemies;
     }
 
     public void retrieveCoins () {
@@ -114,6 +132,21 @@ public class Arena {
         return walls;
     }
 
+    public void handleEnemies() {
+        for (Monster monster : monsters) {
+            Position pos = monster.move();
+            if (canMoveElement(pos))
+                monster.setPosition(pos);
+        }
+    }
+
+    public boolean verifyMonsterCollisions() {
+        for (Monster monster : monsters)
+            if (monster.position.equals(hero.position))
+                return true;
+        return false;
+    }
+
     public void processKey(KeyStroke key) throws IOException {
         KeyType keyType = key.getKeyType();
 
@@ -137,6 +170,8 @@ public class Arena {
         graphics.setBackgroundColor(TextColor.Factory.fromString("#8C2D19"));
         graphics.fillRectangle(new TerminalPosition(0,0), new TerminalSize(width, height), ' ');
         hero.draw(graphics);
+        for (Monster monster : monsters)
+            monster.draw(graphics);
         for (Coin coin : coins)
             coin.draw(graphics);
         for (Wall wall : walls)
@@ -148,4 +183,5 @@ public class Arena {
     private Hero hero;
     private List<Wall> walls;
     private List<Coin> coins;
+    private List<Monster> monsters;
 }

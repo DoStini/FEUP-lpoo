@@ -43,13 +43,16 @@ public class Game {
                 KeyStroke key = screen.readInput();
 
                 arena.processKey(key);
-
-                arena.retrieveCoins();
+                arena.handleEnemies();
+                if(arena.verifyMonsterCollisions())
+                    screen.close();
 
                 if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q')
                     screen.close();
                 else if (key.getKeyType() == KeyType.EOF)
                     break;
+
+                arena.retrieveCoins();
 
                 this.draw();
             } catch (IOException e) {
