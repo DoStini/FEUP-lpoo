@@ -9,6 +9,7 @@ import com.googlecode.lanterna.screen.Screen;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Arena {
     public Arena(int width, int height) {
@@ -16,6 +17,7 @@ public class Arena {
         this.height = height;
         hero = new Hero(10,10);
         this.walls = createWalls();
+        this.coins = createCoins();
     }
 
     public int getWidth() {
@@ -42,6 +44,18 @@ public class Arena {
         return false;
     }
 
+    private int coinIdx(Position position) {
+        for (int i = 0; i < coins.size(); i++){
+            if(position.equals(coins.get(i).getPosition()))
+                return i;
+        }
+        return -1;
+    }
+
+    private boolean isCoin(Position position) {
+        return coinIdx(position) != -1;
+    }
+
     private boolean canHeroMove(Position position){
 
         return position.getX() >= 0 &&
@@ -54,6 +68,34 @@ public class Arena {
     private void moveHero(Position position){
         if(canHeroMove(position))
             hero.setPosition(position);
+    }
+
+    private List<Coin> createCoins() {
+        List<Coin> coins = new ArrayList<>();
+
+        Random random = new Random();
+
+        int numCoins = random.nextInt(10)+5;
+
+        for (int i = 0; i < numCoins;) {
+            Position pos = new Position(random.nextInt(width-1), random.nextInt(height-1));
+            if(!isWall(pos) && !coins.contains(new Coin(pos.getX(), pos.getY())) && !pos.equals(hero.position)) {
+                coins.add(new Coin(pos.getX(), pos.getY()));
+                i++;
+            }
+        }
+
+        return coins;
+    }
+
+    public void retrieveCoins () {
+        int coin = coinIdx(hero.position);
+
+        if (coin != -1) {
+            coins.remove(coin);
+        }
+
+        hero.increaseCoins();
     }
 
     private List<Wall> createWalls() {
@@ -95,11 +137,15 @@ public class Arena {
         graphics.setBackgroundColor(TextColor.Factory.fromString("#8C2D19"));
         graphics.fillRectangle(new TerminalPosition(0,0), new TerminalSize(width, height), ' ');
         hero.draw(graphics);
+        for (Coin coin : coins)
+            coin.draw(graphics);
         for (Wall wall : walls)
             wall.draw(graphics);
     }
 
+
     private int width, height;
     private Hero hero;
     private List<Wall> walls;
+    private List<Coin> coins;
 }

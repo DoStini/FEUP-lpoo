@@ -15,7 +15,7 @@ public class Game {
     private Arena arena;
 
     public Game() {
-        arena = new Arena(20,20);
+        arena = new Arena(40,20);
         try {
             TerminalSize tSize = new TerminalSize(40, 20);
             DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(tSize);
@@ -43,6 +43,8 @@ public class Game {
                 KeyStroke key = screen.readInput();
 
                 arena.processKey(key);
+
+                arena.retrieveCoins();
 
                 if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q')
                     screen.close();

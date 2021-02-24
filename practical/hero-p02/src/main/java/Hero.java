@@ -5,19 +5,10 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.screen.Screen;
 
-public class Hero {
+public class Hero extends Element {
 
-    private Position position;
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public void setPosition(Position position) {
-        this.position = position;
-    }
     public Hero(int x, int y){
-        position = new Position(x,y);
+        super(x,y);
     }
 
     public void draw(TextGraphics graphics) {
@@ -26,16 +17,18 @@ public class Hero {
         graphics.putString(new TerminalPosition(position.getX(), position.getY()), "X");
     }
 
-    public Position moveUp() {
-        return position.moveUp();
+
+    public int getCoins() {
+        return coins;
     }
-    public Position moveDown() {
-        return position.moveDown();
+
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
-    public Position moveLeft() {
-        return position.moveLeft();
+
+    public void increaseCoins() {
+        coins++;
     }
-    public Position moveRight() {
-        return position.moveRight();
-    }
+
+    private int coins;
 }
