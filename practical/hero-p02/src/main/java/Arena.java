@@ -36,7 +36,7 @@ public class Arena {
 
     private boolean isWall(Position position) {
         for (Wall wall : walls){
-            if(position.getX() == wall.getPosition().getX() && position.getY() == wall.getPosition().getY())
+            if(position.equals(wall.getPosition()))
                 return true;
         }
         return false;
