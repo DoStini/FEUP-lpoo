@@ -12,11 +12,10 @@ import java.io.IOException;
 public class Game {
 
     private Screen screen;
-    private Hero hero;
-
+    private Arena arena;
 
     public Game() {
-        hero = new Hero(10,10);
+        arena = new Arena(20,20);
         try {
             TerminalSize tSize = new TerminalSize(40, 20);
             DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(tSize);
@@ -32,36 +31,6 @@ public class Game {
         }
     }
 
-    private void moveHero(Position position){
-        hero.setPosition(position);
-    }
-
-    private void processKey(KeyStroke key) throws IOException {
-        KeyType keyType = key.getKeyType();
-
-        switch (keyType) {
-            case ArrowLeft:
-                moveHero(hero.moveLeft());
-                break;
-            case ArrowRight:
-                moveHero(hero.moveRight());
-                break;
-            case ArrowDown:
-                moveHero(hero.moveDown());
-                break;
-            case ArrowUp:
-                moveHero(hero.moveUp());
-                break;
-            case Character:
-                if (key.getCharacter() == 'q'){
-                    screen.close();
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + keyType);
-        }
-    }
-
     public void run() {
         try  {
             this.draw();
@@ -73,9 +42,11 @@ public class Game {
             try  {
                 KeyStroke key = screen.readInput();
 
-                processKey(key);
+                arena.processKey(key);
 
-                if (key.getKeyType() == KeyType.EOF)
+                if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q')
+                    screen.close();
+                else if (key.getKeyType() == KeyType.EOF)
                     break;
 
                 this.draw();
@@ -87,7 +58,7 @@ public class Game {
 
     public void draw() throws IOException {
         this.screen.clear();
-        hero.draw(screen);
+        arena.draw(screen);
         this.screen.refresh();
     }
 }
