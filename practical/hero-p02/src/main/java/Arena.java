@@ -7,12 +7,15 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Arena {
     public Arena(int width, int height) {
         this.width = width;
         this.height = height;
         hero = new Hero(10,10);
+        this.walls = createWalls();
     }
 
     public int getWidth() {
@@ -31,16 +34,42 @@ public class Arena {
         this.height = height;
     }
 
+    private boolean isWall(Position position) {
+        for (Wall wall : walls){
+            if(position.getX() == wall.getPosition().getX() && position.getY() == wall.getPosition().getY())
+                return true;
+        }
+        return false;
+    }
+
     private boolean canHeroMove(Position position){
+
         return position.getX() >= 0 &&
                 position.getX() < width &&
                 position.getY() >= 0 &&
-                position.getY() < height;
+                position.getY() < height
+                && !isWall(position);
     }
 
     private void moveHero(Position position){
         if(canHeroMove(position))
             hero.setPosition(position);
+    }
+
+    private List<Wall> createWalls() {
+        List<Wall> walls = new ArrayList<>();
+
+        for (int c = 0; c < width; c++){
+            walls.add(new Wall(c,0));
+            walls.add(new Wall(c, height-1));
+        }
+
+        for (int r = 0; r < height; r++) {
+            walls.add(new Wall(0,r));
+            walls.add(new Wall(width-1,r));
+        }
+
+        return walls;
     }
 
     public void processKey(KeyStroke key) throws IOException {
@@ -62,12 +91,15 @@ public class Arena {
         }
     }
 
-    public void draw(TextGraphics screen){
-        screen.setBackgroundColor(TextColor.Factory.fromString("#8C2D19"));
-        screen.fillRectangle(new TerminalPosition(0,0), new TerminalSize(width, height), ' ');
-        hero.draw(screen);
+    public void draw(TextGraphics graphics){
+        graphics.setBackgroundColor(TextColor.Factory.fromString("#8C2D19"));
+        graphics.fillRectangle(new TerminalPosition(0,0), new TerminalSize(width, height), ' ');
+        hero.draw(graphics);
+        for (Wall wall : walls)
+            wall.draw(graphics);
     }
 
     private int width, height;
-    Hero hero;
+    private Hero hero;
+    private List<Wall> walls;
 }
