@@ -1,4 +1,4 @@
-package io.github.dostini.lpoo.hero.game;
+package io.github.dostini.lpoo.hero.game.screens;
 
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -10,9 +10,8 @@ public abstract class GameScreen {
         this.width = width;
         this.height = height;
     }
-    abstract void init();
-    abstract GameState run(KeyStroke key) throws IOException;
-    abstract void draw(TextGraphics graphics);
+    public abstract GameState run(KeyStroke key) throws IOException;
+    public abstract void draw(TextGraphics graphics);
 
     public int getWidth() {
         return width;

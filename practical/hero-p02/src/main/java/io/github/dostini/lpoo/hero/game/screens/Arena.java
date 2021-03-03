@@ -1,4 +1,4 @@
-package io.github.dostini.lpoo.hero.game;
+package io.github.dostini.lpoo.hero.game.screens;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
@@ -7,10 +7,9 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import io.github.dostini.lpoo.hero.datatype.Position;
-import io.github.dostini.lpoo.hero.element.Coin;
-import io.github.dostini.lpoo.hero.element.Hero;
-import io.github.dostini.lpoo.hero.element.Monster;
-import io.github.dostini.lpoo.hero.element.Wall;
+import io.github.dostini.lpoo.hero.element.*;
+import io.github.dostini.lpoo.hero.game.screens.GameScreen;
+import io.github.dostini.lpoo.hero.game.screens.GameState;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,23 +23,23 @@ public class Arena extends GameScreen {
         this.walls = createWalls();
         this.coins = createCoins();
         this.monsters = createEnemies();
+        this.door = createDoor();
     }
 
     @Override
-    void init() {
-
-    }
-
-    @Override
-    GameState run(KeyStroke key) throws IOException {
+    public GameState run(KeyStroke key) throws IOException {
         processKey(key);
         handleEnemies();
         verifyMonsterCollisions();
         retrieveCoins();
         if (!hero.isAlive())
             return GameState.LOSE;
-        if (coins.isEmpty())
-            return GameState.WIN;
+        if (coins.isEmpty()) {
+            door.setVisible(true);
+            if (door.getPosition().equals(hero.getPosition()))
+                return GameState.WIN;
+        }
+
         return GameState.RUNNING;
     }
 
@@ -76,6 +75,17 @@ public class Arena extends GameScreen {
     private void moveHero(Position position){
         if(canMoveElement(position))
             hero.setPosition(position);
+    }
+
+    private Door createDoor() {
+        Random random = new Random();
+        Position pos;
+        do {
+            pos = new Position(random.nextInt(width-1), random.nextInt(height-1));
+        }
+        while (isWall(pos));
+
+        return new Door(pos.getX(), pos.getY());
     }
 
     private List<Coin> createCoins() {
@@ -189,6 +199,7 @@ public class Arena extends GameScreen {
             coin.draw(graphics);
         for (Wall wall : walls)
             wall.draw(graphics);
+        door.draw(graphics);
     }
 
 
@@ -196,4 +207,5 @@ public class Arena extends GameScreen {
     private List<Wall> walls;
     private List<Coin> coins;
     private List<Monster> monsters;
+    private Door door;
 }

@@ -1,4 +1,4 @@
-package io.github.dostini.lpoo.hero.game;
+package io.github.dostini.lpoo.hero.game.screens;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
@@ -17,19 +17,14 @@ public class EndScreen extends GameScreen {
     }
 
     @Override
-    void init() {
-
-    }
-
-    @Override
-    GameState run(KeyStroke key) throws IOException {
+    public GameState run(KeyStroke key) throws IOException {
         if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'r')
             return GameState.RESTART;
         return GameState.RUNNING;
     }
 
     @Override
-    void draw(TextGraphics graphics) {
+    public void draw(TextGraphics graphics) {
         graphics.setBackgroundColor(TextColor.Factory.fromString("#8C2D19"));
         graphics.fillRectangle(new TerminalPosition(0,0), new TerminalSize(width, height), ' ');
         graphics.setForegroundColor(TextColor.Factory.fromString("#ffffff"));

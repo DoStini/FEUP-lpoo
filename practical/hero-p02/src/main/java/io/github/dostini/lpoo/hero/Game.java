@@ -1,4 +1,4 @@
-package io.github.dostini.lpoo.hero.game;
+package io.github.dostini.lpoo.hero;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyType;
@@ -7,16 +7,27 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.input.KeyStroke;
+import io.github.dostini.lpoo.hero.game.screens.Arena;
+import io.github.dostini.lpoo.hero.game.screens.EndScreen;
+import io.github.dostini.lpoo.hero.game.screens.GameScreen;
+import io.github.dostini.lpoo.hero.game.screens.GameState;
 
 import java.io.IOException;
 
 public class Game {
 
     private Screen screen;
-    private GameScreen game;
+    private GameScreen gameScreen;
+    private int currLevel = 0;
+    private int maxLevels;
 
     public Game() {
-        game = new Arena(40,20);
+        this(1);
+    }
+
+    public Game(int maxLevels) {
+        this.maxLevels = maxLevels;
+        gameScreen = new Arena(40,20);
         try {
             TerminalSize tSize = new TerminalSize(40, 20);
             DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(tSize);
@@ -35,13 +46,17 @@ public class Game {
     private void handleState (GameState state) {
         switch (state) {
             case RESTART:
-                game = new Arena(40,20);
+                gameScreen = new Arena(40,20);
                 break;
             case WIN:
-                game = new EndScreen(40,20,"You Win");
+                currLevel++;
+                if (currLevel == maxLevels)
+                    gameScreen = new EndScreen(40,20,"You Win");
+                else
+                    gameScreen = new Arena(40,20);
                 break;
             case LOSE:
-                game = new EndScreen(40,20,"You Lose");
+                gameScreen = new EndScreen(40,20,"You Lose");
                 break;
         }
     }
@@ -57,7 +72,7 @@ public class Game {
             try  {
                 KeyStroke key = screen.readInput();
 
-               handleState(game.run(key));
+               handleState(gameScreen.run(key));
 
                 if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q')
                     screen.close();
@@ -73,7 +88,7 @@ public class Game {
 
     public void draw() throws IOException {
         this.screen.clear();
-        game.draw(screen.newTextGraphics());
+        gameScreen.draw(screen.newTextGraphics());
         this.screen.refresh();
     }
 }

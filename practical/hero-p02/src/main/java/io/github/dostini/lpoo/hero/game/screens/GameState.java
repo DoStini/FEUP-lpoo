@@ -1,4 +1,4 @@
-package io.github.dostini.lpoo.hero.game;
+package io.github.dostini.lpoo.hero.game.screens;
 
 public enum GameState {
     RUNNING,
