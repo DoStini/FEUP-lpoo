@@ -50,13 +50,16 @@ public class Game {
                 break;
             case WIN:
                 currLevel++;
-                if (currLevel == maxLevels)
+                if (currLevel == maxLevels) {
                     gameScreen = new EndScreen(40,20,"You Win");
+                    currLevel = 0;
+                }
                 else
                     gameScreen = new Arena(40,20);
                 break;
             case LOSE:
                 gameScreen = new EndScreen(40,20,"You Lose");
+                currLevel = 0;
                 break;
         }
     }
