@@ -1,14 +1,18 @@
+package io.github.dostini.lpoo.hero.element;
+
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import io.github.dostini.lpoo.hero.datatype.Position;
 
 import java.util.Random;
 
 public class Monster extends Element {
 
-    public Monster(int x, int y) {
+    public Monster(int x, int y, int strenght) {
         super(x, y);
+        this.strenght = strenght;
     }
 
     public Position move() {
@@ -22,5 +26,11 @@ public class Monster extends Element {
         graphics.setForegroundColor(TextColor.Factory.fromString("#ffaa00"));
         graphics.enableModifiers(SGR.BOLD);
         graphics.putString(new TerminalPosition(position.getX(), position.getY()), "^");
+    }
+
+    private final int strenght;
+
+    public int getStrenght() {
+        return strenght;
     }
 }

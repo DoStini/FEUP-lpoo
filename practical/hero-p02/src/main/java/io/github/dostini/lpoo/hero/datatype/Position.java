@@ -1,3 +1,5 @@
+package io.github.dostini.lpoo.hero.datatype;
+
 public class Position {
     private int x, y;
 

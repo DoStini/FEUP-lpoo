@@ -1,5 +1,6 @@
+package io.github.dostini.lpoo.hero.game;
+
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -12,10 +13,10 @@ import java.io.IOException;
 public class Game {
 
     private Screen screen;
-    private Arena arena;
+    private GameScreen game;
 
     public Game() {
-        arena = new Arena(40,20);
+        game = new Arena(40,20);
         try {
             TerminalSize tSize = new TerminalSize(40, 20);
             DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(tSize);
@@ -31,6 +32,20 @@ public class Game {
         }
     }
 
+    private void handleState (GameState state) {
+        switch (state) {
+            case RESTART:
+                game = new Arena(40,20);
+                break;
+            case WIN:
+                game = new EndScreen(40,20,"You Win");
+                break;
+            case LOSE:
+                game = new EndScreen(40,20,"You Lose");
+                break;
+        }
+    }
+
     public void run() {
         try  {
             this.draw();
@@ -42,18 +57,13 @@ public class Game {
             try  {
                 KeyStroke key = screen.readInput();
 
-                arena.processKey(key);
-                arena.handleEnemies();
-                if(arena.verifyMonsterCollisions())
-                    screen.close();
+               handleState(game.run(key));
 
                 if (key.getKeyType() == KeyType.Character && key.getCharacter() == 'q')
                     screen.close();
                 else if (key.getKeyType() == KeyType.EOF)
                     break;
-
-                arena.retrieveCoins();
-
+                
                 this.draw();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,7 +73,7 @@ public class Game {
 
     public void draw() throws IOException {
         this.screen.clear();
-        arena.draw(screen.newTextGraphics());
+        game.draw(screen.newTextGraphics());
         this.screen.refresh();
     }
 }

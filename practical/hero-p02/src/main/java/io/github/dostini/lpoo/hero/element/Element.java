@@ -1,4 +1,7 @@
+package io.github.dostini.lpoo.hero.element;
+
 import com.googlecode.lanterna.graphics.TextGraphics;
+import io.github.dostini.lpoo.hero.datatype.Position;
 
 public abstract class Element {
 

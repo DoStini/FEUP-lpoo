@@ -1,39 +1,47 @@
+package io.github.dostini.lpoo.hero.game;
+
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
+import io.github.dostini.lpoo.hero.datatype.Position;
+import io.github.dostini.lpoo.hero.element.Coin;
+import io.github.dostini.lpoo.hero.element.Hero;
+import io.github.dostini.lpoo.hero.element.Monster;
+import io.github.dostini.lpoo.hero.element.Wall;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Arena {
+public class Arena extends GameScreen {
     public Arena(int width, int height) {
-        this.width = width;
-        this.height = height;
+        super(width,height);
         hero = new Hero(10,10);
         this.walls = createWalls();
         this.coins = createCoins();
         this.monsters = createEnemies();
     }
 
-    public int getWidth() {
-        return width;
+    @Override
+    void init() {
+
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
+    @Override
+    GameState run(KeyStroke key) throws IOException {
+        processKey(key);
+        handleEnemies();
+        verifyMonsterCollisions();
+        retrieveCoins();
+        if (!hero.isAlive())
+            return GameState.LOSE;
+        if (coins.isEmpty())
+            return GameState.WIN;
+        return GameState.RUNNING;
     }
 
     private boolean isWall(Position position) {
@@ -79,7 +87,7 @@ public class Arena {
 
         for (int i = 0; i < numCoins;) {
             Position pos = new Position(random.nextInt(width-1), random.nextInt(height-1));
-            if(!isWall(pos) && !coins.contains(new Coin(pos.getX(), pos.getY())) && !pos.equals(hero.position)) {
+            if(!isWall(pos) && !coins.contains(new Coin(pos.getX(), pos.getY())) && !pos.equals(hero.getPosition())) {
                 coins.add(new Coin(pos.getX(), pos.getY()));
                 i++;
             }
@@ -97,8 +105,8 @@ public class Arena {
 
         for (int i = 0; i < numEnemies;) {
             Position pos = new Position(random.nextInt(width-1), random.nextInt(height-1));
-            if(!isWall(pos) && !pos.equals(hero.position)) {
-                enemies.add(new Monster(pos.getX(), pos.getY()));
+            if(!isWall(pos) && !pos.equals(hero.getPosition())) {
+                enemies.add(new Monster(pos.getX(), pos.getY(), random.nextInt(10)+5));
                 i++;
             }
         }
@@ -107,7 +115,7 @@ public class Arena {
     }
 
     public void retrieveCoins () {
-        int coin = coinIdx(hero.position);
+        int coin = coinIdx(hero.getPosition());
 
         if (coin != -1) {
             coins.remove(coin);
@@ -140,11 +148,15 @@ public class Arena {
         }
     }
 
-    public boolean verifyMonsterCollisions() {
+    public void verifyMonsterCollisions() {
         for (Monster monster : monsters)
-            if (monster.position.equals(hero.position))
-                return true;
-        return false;
+            if (monster.getPosition().equals(hero.getPosition())) {
+                hero.decreaseHP(monster.getStrenght());
+            }
+    }
+
+    public boolean verifyEndGame() {
+        return !hero.isAlive() || coins.isEmpty();
     }
 
     public void processKey(KeyStroke key) throws IOException {
@@ -166,6 +178,7 @@ public class Arena {
         }
     }
 
+    @Override
     public void draw(TextGraphics graphics){
         graphics.setBackgroundColor(TextColor.Factory.fromString("#8C2D19"));
         graphics.fillRectangle(new TerminalPosition(0,0), new TerminalSize(width, height), ' ');
@@ -179,7 +192,6 @@ public class Arena {
     }
 
 
-    private int width, height;
     private Hero hero;
     private List<Wall> walls;
     private List<Coin> coins;
