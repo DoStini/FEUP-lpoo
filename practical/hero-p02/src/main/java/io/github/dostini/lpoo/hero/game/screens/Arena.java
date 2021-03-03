@@ -129,9 +129,8 @@ public class Arena extends GameScreen {
 
         if (coin != -1) {
             coins.remove(coin);
+            hero.increaseCoins();
         }
-
-        hero.increaseCoins();
     }
 
     private List<Wall> createWalls() {
@@ -200,6 +199,13 @@ public class Arena extends GameScreen {
         for (Wall wall : walls)
             wall.draw(graphics);
         door.draw(graphics);
+
+        graphics.setBackgroundColor(TextColor.Factory.fromString("#000000"));
+        graphics.setForegroundColor(TextColor.Factory.fromString("#ffffff"));
+        graphics.putString(width + 10,height/2 - 3,
+                "Score: " + String.valueOf(hero.getCoins()));
+        graphics.putString(width + 10,height/2 + 3,
+                "Health: " + String.valueOf(hero.getHp()));
     }
 
 

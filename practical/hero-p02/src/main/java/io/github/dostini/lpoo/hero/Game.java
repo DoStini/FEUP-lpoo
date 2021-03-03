@@ -29,7 +29,7 @@ public class Game {
         this.maxLevels = maxLevels;
         gameScreen = new Arena(40,20);
         try {
-            TerminalSize tSize = new TerminalSize(40, 20);
+            TerminalSize tSize = new TerminalSize(80, 20);
             DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory().setInitialTerminalSize(tSize);
 
             Terminal terminal = defaultTerminalFactory.createTerminal();
