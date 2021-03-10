@@ -1,7 +1,8 @@
 package com.aor.numbers;
 
+import com.aor.numbers.list.operations.IListDeduplicator;
+import com.aor.numbers.list.operations.ListAggregator;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

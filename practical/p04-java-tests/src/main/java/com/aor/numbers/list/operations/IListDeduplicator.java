@@ -1,4 +1,4 @@
-package com.aor.numbers;
+package com.aor.numbers.list.operations;
 
 import java.util.List;
 
