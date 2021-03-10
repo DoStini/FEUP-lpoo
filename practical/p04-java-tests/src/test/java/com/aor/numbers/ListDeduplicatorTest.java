@@ -3,6 +3,8 @@ package com.aor.numbers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,31 +29,27 @@ public class ListDeduplicatorTest {
         expected.add(5);
     }
 
-    class StubListSorter1 implements IListSorter {
-        public List<Integer> sort() {
-            return Arrays.asList(1,2,2,4);
-        }
-    }
-
-    class StubListSorter2 implements IListSorter {
-        public List<Integer> sort() {
-            return Arrays.asList(1,2,2,4,5);
-        }
-    }
-
     @Test
     public void distinct_bug_8726() {
         List<Integer> list = Arrays.asList(1, 2, 4, 2);
         List<Integer> expected = Arrays.asList(1, 2, 4);
         ListDeduplicator deduplicator = new ListDeduplicator(list);
-        Assertions.assertEquals(expected, deduplicator.deduplicate(new StubListSorter1()));
+
+        IListSorter sorter = Mockito.mock(IListSorter.class);
+        Mockito.when(sorter.sort()).thenReturn(Arrays.asList(1,2,2,4));
+
+        Assertions.assertEquals(expected, deduplicator.deduplicate(sorter));
     }
 
     @Test
     public void deduplicate() {
 
         ListDeduplicator deduplicator = new ListDeduplicator(testList);
-        List<Integer> deduplicate = deduplicator.deduplicate(new StubListSorter2());
+
+        IListSorter sorter = Mockito.mock(IListSorter.class);
+        Mockito.when(sorter.sort()).thenReturn(Arrays.asList(1,2,2,4,5));
+
+        List<Integer> deduplicate = deduplicator.deduplicate(sorter);
 
         Assertions.assertEquals(expected, deduplicate);
     }

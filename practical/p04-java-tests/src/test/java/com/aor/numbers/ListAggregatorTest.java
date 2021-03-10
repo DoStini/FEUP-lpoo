@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,25 +58,15 @@ public class ListAggregatorTest {
         Assertions.assertEquals(1, min);
     }
 
-    class StubListDeduplicator implements IListDeduplicator {
-        @Override
-        public List<Integer> deduplicate(IListSorter sorter) {
-            return Arrays.asList(1, 2, 4, 5);
-        }
-    }
-
-    class StubListDeduplicator2 implements IListDeduplicator {
-        @Override
-        public List<Integer> deduplicate(IListSorter sorter) {
-            return Arrays.asList(1, 2, 4);
-        }
-    }
-
     @Test
     public void distinct() {
         ListAggregator aggregator = new ListAggregator(testList);
 
-        int distinct = aggregator.distinct(new StubListDeduplicator(), new ListSorter(testList));
+        IListDeduplicator dedup = Mockito.mock(IListDeduplicator.class);
+
+        Mockito.when(dedup.deduplicate(Mockito.any())).thenReturn(Arrays.asList(1,2,4,5));
+
+        int distinct = aggregator.distinct(dedup, Mockito.any());
 
         Assertions.assertEquals(4, distinct);
     }
@@ -84,6 +75,8 @@ public class ListAggregatorTest {
     public void distinct_bug_8726() {
         List<Integer> list = Arrays.asList(1, 2, 4, 2);
         ListAggregator aggregator = new ListAggregator(list);
-        Assertions.assertEquals(3, aggregator.distinct(new StubListDeduplicator2(), new ListSorter(list)));
+        IListDeduplicator dedup = Mockito.mock(IListDeduplicator.class);
+        Mockito.when(dedup.deduplicate(Mockito.any())).thenReturn(Arrays.asList(1, 2, 4));
+        Assertions.assertEquals(3, aggregator.distinct(dedup, Mockito.any()));
     }
 }
