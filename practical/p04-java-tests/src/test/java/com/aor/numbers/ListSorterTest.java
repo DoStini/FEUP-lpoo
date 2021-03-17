@@ -20,6 +20,8 @@ public class ListSorterTest {
         list.add(3);
         list.add(2);
         list.add(6);
+        list.add(6);
+        list.add(6);
         list.add(1);
         list.add(4);
         list.add(5);
@@ -31,6 +33,8 @@ public class ListSorterTest {
         expected.add(3);
         expected.add(4);
         expected.add(5);
+        expected.add(6);
+        expected.add(6);
         expected.add(6);
         expected.add(7);
     }
